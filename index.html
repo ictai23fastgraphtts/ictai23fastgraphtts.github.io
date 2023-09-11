@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- <meta name="google-site-verification" content="ftFOlJETX-2KNjaPh8W6s8lhigItRuu9fOmjHZZ0nY0" /> -->
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <title>FastGraphTTS</title>
+  <style>
+    div {
+      margin-bottom: 64px;
+      }
+      .first-col {
+        padding-right: 40px;
+        white-space: nowrap;
+      }
+      .text {
+        font-style: italic;
+        color: #666666;
+      }  
+  </style>
+</head>
+    
+<style type="text/css">
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  /* audio {
+    width: 100%;
+  } */
+
+  thead>tr>th:first-child {
+    width: 96px;
+  }
+.bg-secondary {
+    background-color: #11568b!important;
+}
+  @media (max-width: 767px) {
+    .big-screen {
+      display: none;
+    }
+    .container {
+    max-width: 90% !important;
+}
+  }
+
+  @media (min-width: 767px) {
+    .small-screen {
+      display: none;
+    }
+    .container {
+    max-width: 90% !important;
+}
+  }
+</style>
+
+
+
+
+<body>
+  <header class="header">
+    <div class="jumbotron bg-secondary text-center">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+ 
+            <h1><a class="text-light" style="color:red;">FastGraphTTS: An Ultrafast Syntax-Aware Speech Synthesis Framework </h1><br> 
+             
+<!--             <font size=5><span style="color:#000000">Authors: Aolan Sun, Jianzong Wang<sup>*</sup>, Ning Cheng, Wenjing Shi, Jing Xiao </font>  -->
+            <br> </a>
+           
+                        <font size=3><span style="color:#0f07e9"> https://largeaudiomodel.com/</font>               
+     
+<!--             <font size=3><span style="color:#000000">Ping An Technology (Shenzhen) Co., Ltd., China </font>                -->
+              <p>
+ 
+            </p>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+      <div class="row" id="result">
+        <div class="col-md-12">
+        	<h3>Abstract:</h3> 
+          This paper integrates graph-to-sequence into an end-to-end text-to-speech framework for syntax-aware modelling with syntactic information of input text. Specifically, the input text is parsed by a dependency parsing module to form a syntactic graph. The syntactic graph is then encoded by a graph encoder to extract the syntactic hidden information, which is concatenated with phoneme embedding and input to the alignment and flow-based decoding modules to generate the raw audio waveform. The model is experimented on two languages, English and Mandarin, using single-speaker, few samples of target speakers, and multi-speaker datasets, respectively. Experimental results show better prosodic consistency performance between input text and generated audio, and also get higher scores in the subjective prosodic evaluation, and shows ability of voice conversion. Besides, the efficiency of the model is largely boosted through the design of the AI chip operator, which achieves 5x acceleration than the benchmark model.
+          <br>
+          <h5 style="display: inline-block;font-size: 12px;">Keywords:</h5> <span style='font-size: 12px;'>Text-to-speech, graph neural network, syntactic modelling, speech synthesis</span>
+          <p></p>
+          <h3 id="toc_title">Contents</h3>
+          <div id="toc_container" bis_skin_checked="1">
+            <ul>
+              <li>
+                <a href="#ss">Single Speaker (LJ Speech, Biaobei Dataset)</a>
+              </li>
+              <li>
+                <a href="#fs">Few-shot TTS (English, Mandarian Dataset)</a>
+              </li>
+              <li>
+                <a href="#ms">Multi-speaker (VCTK, AI-Shell-3 Dataset)</a>
+              </li>
+              <li>
+                <a href="#vc">Voice Conversion</a>
+              </li>
+            </ul>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="ss">
+              <h2>Single Speaker (LJ Speech Dataset)</h2>
+            </a>
+            <hr>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " The jury did not believe him, and the verdict was for the defendants. "
+                  </td>
+                  <td class="text">
+                    " He had repeated this wish only a few days before, during his visit to Tampa, Florida. "
+                  </td>
+                  <td class="text">
+                    " The poorer prisoners were not in abject want, as in other prisons. "
+                  </td>
+                </tr>
+                <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src="wav/ljs/gt/LJ013-0055.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/gt/LJ030-0063.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/gt/LJ002-0261.wav"></audio></td>
+                </tr>
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/ljs/vits/LJ013-0055.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/vits/LJ030-0063.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/vits/LJ002-0261.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">GraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts/LJ013-0055.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts/LJ030-0063.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts/LJ002-0261.wav"></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts2/LJ013-0055.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts2/LJ030-0063.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/ljs/graphtts2/LJ002-0261.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="ss">
+              <h2>Single Speaker (Biaobei Dataset)</h2>
+            </a>
+            <hr>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " 其他跨国公司的研发中心包括，飞思考尔、思科网讯等。 "
+                  </td>
+                  <td class="text">
+                    " 母熊直立着，一副随时要扑过来的样子。 "
+                  </td>
+                  <td class="text">
+                    " 据悉，领馆面朝一条较窄的马路，夜间很少有行人经过。 "
+                  </td>
+                </tr>
+                <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/gt/002347.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/gt/005002.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/gt/007051.wav"></audio></td>
+                </tr>
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/vits/002347.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/vits/005002.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/vits/007051.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">GraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts/002347.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts/005002.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts/007051.wav"></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts2/002347.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts2/005002.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/biaobei/graphtts2/007051.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="fs">
+              <h2>Few-shot (English Dataset)</h2>
+            </a>
+            <hr>
+            <h5 id="toc_title">Source speaker: </h5>
+            <div bis_skin_checked="1">
+              <!-- <object height="10" width="30" data="wav/few-shot/en22.wav"></object> -->
+              <audio controls="" preload="none"><source src="wav/few-shot/en22.wav"></audio>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " Since these agencies are already obliged constantly to evaluate the activities of such groups, "
+                  </td>
+                  <td class="text">
+                    " would not agree with that particular wording, end quote. "
+                  </td>
+                  <td class="text">
+                    " Soon afterwards Dixon died, showing all the symptoms already described. "
+                  </td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/vits/LJ050-0118.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/vits/LJ044-0224.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/vits/LJ017-0183.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">GraphSTTS</td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/graphtts2/LJ050-0118.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/graphtts2/LJ044-0224.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/en/graphtts2/LJ017-0183.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="fs">
+              <h2>Few-shot (Mandarian Dataset)</h2>
+            </a>
+            <hr>
+            <h5 id="toc_title">Source speaker: </h5>
+            <div bis_skin_checked="1">
+              <!-- <object height="10" width="30" data="wav/few-shot/ch04.wav"></object> -->
+              <audio controls="" preload="none"><source src="wav/few-shot/ch04.wav"></audio>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " 这趟慢车的乘客逐年减少。 "
+                  </td>
+                  <td class="text">
+                    " 这样一来，供应商必然不会铤而走险。 "
+                  </td>
+                  <td class="text">
+                    " 你总能从多视角看待事物，从而解决一些很棘手的问题！ "
+                  </td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/vits/004388.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/vits/001730.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/vits/006652.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">Graph TTS</td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/graphtts2/004388.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/graphtts2/001730.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/few-shot/zh/graphtts2/006652.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="ms">
+              <h2>Multi-Speaker (VCTK Dataset)</h2>
+            </a>
+            <hr>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " People come into the Borders for the beauty of the background. "
+                  </td>
+                  <td class="text">
+                    " The rainbow is a division of white light into many beautiful colors. "
+                  </td>
+                  <td class="text">
+                    " the greeks used to imagine that it was a sign from the gods to foretell war or heavy rain. "
+                  </td>
+                </tr>
+                <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src="wav/vctk/gt/p258_027.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/gt/p299_007.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/gt/p340_015.wav"></audio></td>
+                </tr>
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/vctk/vits/p258_027.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/vits/p299_007.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/vits/p340_015.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">GraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts/p258_027.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts/p299_007.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts/p279_088.wav"></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts2/p258_027.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts2/p299_007.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vctk/graphtts2/p340_015.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="ms">
+              <h2>Multi-Speaker (AI-Shell-3 Dataset)</h2>
+            </a>
+            <hr>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " 确实没有必要将自己的未来全部拴在房子上。 "
+                  </td>
+                  <td class="text">
+                    " 当老人遇到困难或身体不舒适时。 "
+                  </td>
+                  <td class="text">
+                    " 以及可能存在的风险和不确定因素。 "
+                  </td>
+                </tr>
+                <tr>
+                  <td class="first-col">Ground Truth</td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/gt/SSB01450445.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/gt/SSB04340158.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/gt/SSB03660222.wav"></audio></td>
+                </tr>
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/vits/SSB01450445.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/vits/SSB04340158.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/vits/SSB03660222.wav"></audio></td>
+                </tr>
+                <!-- <tr>
+                  <td class="first-col">GraphTTS</td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/graphtts2/SSB01450445.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/graphtts2/SSB04340158.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/aishell3/graphtts2/SSB03660222.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="vc">
+              <h2>Voice Conversion (VCTK Dataset)</h2>
+            </a>
+            <table border="1">
+              <tbody>
+                <tr>
+                  <th>From\To</th>
+                  <th>Speaker A</th>
+                  <th>Speaker B</th>
+                  <!-- <th>Speaker c</th>
+                  <th>Speaker D</th> -->
+                </tr>
+                <tr>
+                  <th>Speaker A</th>
+                  <td><audio controls preload="none"><source src="wav/vc/vctk/AtoA.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vc/vctk/AtoB.wav"></audio></td>
+                  <!-- <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td> -->
+                </tr>
+                <tr>
+                  <th>Speaker B</th>
+                  <td><audio controls preload="none"><source src="wav/vc/vctk/BtoA.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vc/vctk/BtoB.wav"></audio></td>
+                  <!-- <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td> -->
+                </tr>
+                <!-- <tr>
+                  <th>Speaker C</th>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr>
+                <tr>
+                  <th>Speaker D</th>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="vc">
+              <h2>Voice Conversion (AI-Shell-3 Dataset)</h2>
+            </a>
+            <table border="1">
+              <tbody>
+                <tr>
+                  <th>From\To</th>
+                  <th>Speaker A</th>
+                  <th>Speaker B</th>
+                  <!-- <th>Speaker c</th>
+                  <th>Speaker D</th> -->
+                </tr>
+                <tr>
+                  <th>Speaker A</th>
+                  <td><audio controls preload="none"><source src="wav/vc/aishell3/AtoA.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vc/aishell3/AtoB.wav"></audio></td>
+                  <!-- <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td> -->
+                </tr>
+                <tr>
+                  <th>Speaker B</th>
+                  <td><audio controls preload="none"><source src="wav/vc/aishell3/BtoA.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/vc/aishell3/BtoB.wav"></audio></td>
+                  <!-- <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td> -->
+                </tr>
+                <!-- <tr>
+                  <th>Speaker C</th>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr>
+                <tr>
+                  <th>Speaker D</th>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                  <td><audio controls preload="none"><source src=""></audio></td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+
+          <div bis_skin_checked="1">
+            <a name="pa">
+              <h2>Prosody Analysis (LJ Speech Dataset)</h2>
+            </a>
+            <hr>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h4>Text</h4>
+                  </td>
+                  <td class="text">
+                    " Since these agencies are already obliged constantly to evaluate the activities of such groups, "
+                  </td>
+                  <td class="text">
+                    " At first Mrs. Connally thought that her husband had been killed. "
+                  </td>
+                  <td class="text">
+                    " and one or two men were allowed to mend clothes and make shoes. The rules made by the Secretary of State were hung up in conspicuous parts of the prison; "
+                  </td>
+                </tr>
+                <tr>
+                  <td class="first-col"> </td>
+                  <td>
+                    <img src="wav/prosody/figure/text1.png" style="  display: block;   margin-left: auto;   margin-right: auto;   width: 100%;">
+<!--                     <object data="wav/prosody/figure/text1.pdf" height="100" width="100%"></object> -->
+                  </td>
+                  <!-- <td><img src="" alt=""></td> -->
+                  <td><img src="wav/prosody/figure/text2.png" style="  display: block;   margin-left: auto;   margin-right: auto;   width: 100%;"></td>
+                  <td><img src="wav/prosody/figure/text3.png" style="  display: block;   margin-left: auto;   margin-right: auto;   width: 100%;"></td>
+                </tr>
+                <tr>
+                  <td class="first-col"> </td>
+                  <td colspan="3">It can be seen from the red dashed box in the figures, that VITS sometimes randomly generates accented audio clips, with no relation with the actual speech syntax. For example, "such" in the first sentence does not have the meaning of stress, but VITS assigns obvious stress to this word, which is inconsistent with the syntactic information of the text. This random stress situation is resolved in this paper by FastGraphTTS.</td>
+                <tr>
+                  <td class="first-col">VITS</td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m2_1.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m2_2.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m2_3.wav"></audio></td>
+                </tr>
+                <tr>
+                  <td class="first-col">FastGraphTTS</td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m1_1.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m1_2.wav"></audio></td>
+                  <td><audio controls preload="none"><source src="wav/prosody/m1_3.wav"></audio></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- <div class="row" style="font-size: 12px;">
+            + Equal contribution
+            </div> -->
+<!--             <div  class="row" style="font-size: 12px;">
+            * Corresponding author: Jianzong Wang, jzwang@188.com
+            </div> -->
+        </div>
+      </div>
+    </div>
+          
+<!-- <p align="center"> -->
+<!-- <video width="640" height="480" controls> -->
+    <!-- <source src="movie.mp4" type="video/mp4">
+    您的浏览器不支持video标签
+</video>
+</p> -->
+</body>
+</html>
